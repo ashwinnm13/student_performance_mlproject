@@ -41,9 +41,14 @@ def evaluate_models(X_train,y_train,X_test,y_test,models):
 
             test_model_score = r2_score(y_test,y_test_pred)
 
-            report[list(models.keys())[i]] = train_model_score
+            report[list(models.keys())[i]] = test_model_score
 
         return report
 
     except Exception as e:
         raise CustomException(str(e),sys)
+
+# Score	Meaning
+# 1.0	   | Perfect prediction
+# 0.0	   | Poor model
+# Negative | Very bad model

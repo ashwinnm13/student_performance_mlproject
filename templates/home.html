@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Performance Predictor</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Segoe UI", sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #0f172a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 30px;
+            color: white;
+            overflow-x: hidden;
+        }
+
+        /* Background Glow */
+        body::before {
+            content: "";
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: rgba(59, 130, 246, 0.15);
+            border-radius: 50%;
+            top: -100px;
+            left: -100px;
+            filter: blur(120px);
+        }
+
+        body::after {
+            content: "";
+            position: absolute;
+            width: 450px;
+            height: 450px;
+            background: rgba(139, 92, 246, 0.15);
+            border-radius: 50%;
+            bottom: -120px;
+            right: -100px;
+            filter: blur(120px);
+        }
+
+        .container {
+            position: relative;
+            width: 100%;
+            max-width: 720px;
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(18px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            padding: 40px;
+            z-index: 1;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .header h1 {
+            font-size: 34px;
+            font-weight: 700;
+            color: #f8fafc;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #94a3b8;
+            font-size: 15px;
+            letter-spacing: 0.5px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 22px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .full-width {
+            grid-column: span 2;
+        }
+
+        label {
+            margin-bottom: 8px;
+            color: #cbd5e1;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        input,
+        select {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: white;
+            padding: 14px;
+            border-radius: 14px;
+            outline: none;
+            font-size: 15px;
+            transition: all 0.3s ease;
+        }
+
+        select option {
+            background: #0f172a;
+            color: white;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 16px;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+        }
+
+        .result-box {
+            margin-top: 35px;
+            padding: 25px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            text-align: center;
+        }
+
+        .result-box h2 {
+            color: #cbd5e1;
+            margin-bottom: 12px;
+            font-size: 20px;
+            font-weight: 500;
+        }
+
+        .prediction {
+            font-size: 52px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #60a5fa, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .footer-text {
+            margin-top: 10px;
+            color: #94a3b8;
+            font-size: 13px;
+        }
+
+        @media(max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .full-width {
+                grid-column: span 1;
+            }
+
+            .container {
+                padding: 28px;
+            }
+
+            .header h1 {
+                font-size: 28px;
+            }
+
+            .prediction {
+                font-size: 42px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <div class="header">
+            <h1>Student Performance Predictor</h1>
+            <p>Machine Learning Based Maths Score Estimation System</p>
+        </div>
+
+        <form action="{{ url_for('predict_datapoint') }}" method="post">
+
+            <div class="grid">
+
+                <div class="form-group">
+                    <label>Gender</label>
+                    <select name="gender" required>
+                        <option selected disabled value="">Select Gender</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Race / Ethnicity</label>
+                    <select name="race_ethnicity" required>
+                        <option selected disabled value="">Select Ethnicity</option>
+                        <option value="group A">Group A</option>
+                        <option value="group B">Group B</option>
+                        <option value="group C">Group C</option>
+                        <option value="group D">Group D</option>
+                        <option value="group E">Group E</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Parental Education</label>
+                    <select name="parental_level_of_education" required>
+                        <option selected disabled value="">Select Education</option>
+                        <option value="associate's degree">Associate's Degree</option>
+                        <option value="bachelor's degree">Bachelor's Degree</option>
+                        <option value="high school">High School</option>
+                        <option value="master's degree">Master's Degree</option>
+                        <option value="some college">Some College</option>
+                        <option value="some high school">Some High School</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Lunch Type</label>
+                    <select name="lunch" required>
+                        <option selected disabled value="">Select Lunch</option>
+                        <option value="free/reduced">Free / Reduced</option>
+                        <option value="standard">Standard</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Test Preparation</label>
+                    <select name="test_preparation_course" required>
+                        <option selected disabled value="">Select Status</option>
+                        <option value="none">None</option>
+                        <option value="completed">Completed</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Reading Score</label>
+                    <input type="number"
+                           name="reading_score"
+                           min="0"
+                           max="100"
+                           placeholder="Enter Reading Score"
+                           required>
+                </div>
+
+                <div class="form-group full-width">
+                    <label>Writing Score</label>
+                    <input type="number"
+                           name="writing_score"
+                           min="0"
+                           max="100"
+                           placeholder="Enter Writing Score"
+                           required>
+                </div>
+
+                <div class="form-group full-width">
+                    <button type="submit" class="btn">
+                        Predict Maths Score
+                    </button>
+                </div>
+
+            </div>
+
+        </form>
+
+        {% if results %}
+        <div class="result-box">
+            <h2>Predicted Maths Score</h2>
+
+            <div class="prediction">
+                {{ results }}
+            </div>
+
+            <div class="footer-text">
+                Generated using trained ML regression model
+            </div>
+        </div>
+        {% endif %}
+
+    </div>
+
+</body>
+
+</html>
